@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include <iostream>
 #include <vector>
+#include <fstream>
 #include "bigint.h"
  
 BigInt::BigInt(std::string &s) {
@@ -14,6 +15,7 @@ BigInt::BigInt(std::string &s) {
 }
 
 BigInt::BigInt(unsigned long long nr) {
+    std::cout << nr << std::endl;
     do {
         digits.push_back(nr % 10);
         nr /= 10;
@@ -29,7 +31,7 @@ BigInt::BigInt(const char *s) {
     }
 }
 
-BigInt::BigInt(BigInt &a) {
+BigInt::BigInt(const BigInt &a) {
     digits = a.digits;
 }
 
@@ -47,6 +49,10 @@ bool Null(const BigInt &a) {
 
 int Length(const BigInt &a) {
     return a.digits.size();
+}
+
+int BigInt::length() const {
+    return this->digits.size();
 }
 
 int BigInt::operator[](const int index) const {
@@ -355,3 +361,34 @@ std::ostream &operator<<(std::ostream &out, const BigInt &a) {
     return out;
 }
 
+BigInt BigInt::pow(const BigInt& base, const BigInt& exponent, const BigInt& modulus) {
+    BigInt result = BigInt(1);
+    BigInt baseCopy = base % modulus;
+
+    BigInt exp(exponent);
+    while (!Null(exp)) {
+        if ((exp % BigInt(2))[0] == 1) {
+            result = (result * baseCopy) % modulus;
+        }
+        exp /= 2;
+        baseCopy = (baseCopy * baseCopy) % modulus;
+    }
+
+    return result;
+}
+
+void BigInt::randomize(int bits) {
+    std::string digits;
+
+    for(int i = 0; i < bits / 4; i++) { 
+        digits += (rand() % 10 + '0');
+    }
+
+    *this = BigInt(digits);
+}
+
+BigInt BigInt::random_bigint(int bits) {
+    BigInt result;
+    result.randomize(bits);
+    return result; 
+}

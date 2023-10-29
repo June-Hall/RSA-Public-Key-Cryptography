@@ -49,6 +49,19 @@ int main() {
     std::cout << "a > b: " << greater_than << std::endl;
     std::cout << "a <= b: " << less_equal << std::endl;
     std::cout << "a >= b: " << greater_equal << std::endl;
+    
+    // 测试幂次方取模函数
+    std::string bas = "1212334";
+    std::string exp = "2";
+    std::string mod = "10007";
+
+    BigInt base(bas); 
+    BigInt exponent(exp); 
+    BigInt modulus(mod); 
+
+    BigInt result = BigInt::pow(base, exponent, modulus);
+
+    std::cout << base << " ^ " << exponent << " % " << modulus << " = " << result << std::endl;
 
     return 0;
 }

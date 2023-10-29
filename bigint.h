@@ -31,7 +31,7 @@ public:
      * 
      * @param a 要复制的 BigInt 对象。
      */
-    BigInt(BigInt &a);
+    BigInt(const BigInt &a);
 
     /**
      * @brief BigInt 类的移动构造函数。使用临时 BigInt 对象初始化 BigInt 对象。
@@ -257,6 +257,33 @@ public:
      */
     friend BigInt &operator%=(BigInt &a, const BigInt &b);
 
+    /**
+     * @brief 运算符重载:指数赋值
+     * 
+     * 实现 a ^= b, 计算a的b次方,并赋值给a
+     * 使用快速幂算法进行计算
+     *
+     * @param a - 底数 
+     * @param b - 指数
+     * @return 修改后的a变量
+    */
+    friend BigInt &operator^=(BigInt &base, const BigInt &exponent);
+
+
+    /**
+     * @brief 运算符重载:指数运算
+     * 
+     * 实现 a ^ b, 计算a的b次方
+     * 使用临时变量temp,不修改参数a
+     * 调用指数赋值运算符进行计算
+     * 
+     * @param a 底数
+     * @param b 指数 
+     * @return 计算结果 
+    */
+    friend BigInt operator^(BigInt &base, const BigInt &exponent);
+
+
     // Square Root Function:
 
     /**
@@ -286,6 +313,24 @@ public:
      * @return 输出流，以支持连续输出。
      */
     friend std::ostream &operator<<(std::ostream &out, const BigInt &a);
+
+    /**
+     * @brief 计算 BigInt 对象的幂次方取模结果。
+     * 
+     * 使用重复平方法计算 (底数 ^ 指数) % 模数。
+     * 
+     * @param base 用于幂次方计算的底数 BigInt。
+     * @param exponent 指数 BigInt。
+     * @param modulus 模数 BigInt。
+     * @return (底数 ^ 指数) % 模数 的结果。
+     */
+    static BigInt pow(const BigInt& base, const BigInt& exponent, const BigInt& modulus);
+
+    int length() const;
+
+    void randomize(int bits);
+
+    static BigInt random_bigint(int bits);
 };
 
 #endif
