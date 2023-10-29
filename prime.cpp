@@ -53,3 +53,36 @@ BigInt GenerateRandomPrime(int bits, int k) {
         candidate += 2;  // 尝试下一个奇数
     }
 }
+
+// 生成两个随机的素数
+std::pair<BigInt, BigInt> GenerateRandomPrimes(int bits, int k) {
+    std::pair<BigInt, BigInt> primes;
+
+    BigInt firstPrime = GenerateRandomPrime(bits, k);
+    primes.first = firstPrime;
+
+    BigInt candidate = firstPrime + 2;  // 这里+2确保不接近
+    while (true) {
+        if (MillerRabinTest(candidate, k) && !IsClose(candidate, firstPrime, bits)) {
+            primes.second = candidate;
+            break;
+        }
+        candidate += 2;  // 下一个奇数
+    }
+
+    return primes;
+}
+
+bool IsClose(const BigInt& a, const BigInt& b, const int bits) {
+    BigInt diff = a - b;
+    BigInt threshold(2);
+    threshold ^= (bits - 1);  // 2^(bits-1)
+    return diff < threshold;
+}
+
+
+
+
+
+
+
