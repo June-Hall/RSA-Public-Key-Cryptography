@@ -46,4 +46,4 @@ RSA（Rivest–Shamir–Adleman）是一种非对称加密算法，它使用两�
 6.	rsa_decrypt 函数：rsa_decrypt函数用于使用RSA私钥解密消息。它接受密文ciphertext、解密指数d和n，然后返回明文消息。
 模块功能：
 这个模块提供了完整的RSA加密和解密功能，包括密钥生成、加密和解密操作。用户可以使用这个模块来保护数据的机密性和完整性，确保只有授权用户能够访问加密数据。
-![image](https://github.com/June-Hall/RSA-Public-Key-Cryptography/assets/109567803/cda8b1bf-148d-48b7-a007-a2e709cbbedf)
+
