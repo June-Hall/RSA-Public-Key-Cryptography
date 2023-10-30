@@ -9,17 +9,6 @@ BigInt gcd(BigInt a, BigInt b) {
     return gcd(b, a % b); 
 }
 
-// BigInt modular_inverse(BigInt a, BigInt b) {
-//     for (BigInt x(1); x < b; x++) {
-//         std::cout << "x = " << x << std::endl;
-//         std::cout << "(a * x) % b = " << (a * x) % b << std::endl;
-//         if ((a * x) % b == 1) {
-//             return x;
-//         }
-//     }
-//     throw std::invalid_argument("No modular inverse exists");
-// }
-
 BigInt extended_gcd(BigInt a, BigInt m, BigInt &x, BigInt &y) {
     if (a.null()) {
         x = 0;
@@ -59,8 +48,8 @@ BigInt modular_inverse(BigInt a, BigInt m) {
 // 生成 RSA 公钥和私钥
 void generate_keys(BigInt& p, BigInt& q, BigInt& n, BigInt& e, BigInt& d, bool is_generated) {
     if (!is_generated) {
-        int bits = 8;
-        int k = 10; 
+        int bits = 256;
+        int k = 3; 
         std::pair<BigInt, BigInt> primes = GenerateRandomPrimes(bits / 2, k);
     
         p = primes.first;
@@ -88,9 +77,9 @@ void generate_keys(BigInt& p, BigInt& q, BigInt& n, BigInt& e, BigInt& d, bool i
     while(d.negative() || d.null()) {
         d = BigInt();
         d = modular_inverse(e, phi_n);
-        std::cout << "d = " << d << std::endl;
-        std::cout << "d.negative() = " << d.negative() << std::endl;
-        std::cout << "d.null() = " << d.null() << std::endl;
+        // std::cout << "d = " << d << std::endl;
+        // std::cout << "d.negative() = " << d.negative() << std::endl;
+        // std::cout << "d.null() = " << d.null() << std::endl;
     }
 
     std::cout << "p = " << p << std::endl;

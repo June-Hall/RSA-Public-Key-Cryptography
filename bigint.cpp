@@ -256,21 +256,20 @@ BigInt &operator+=(BigInt &ap, const BigInt &bp) {
         if (a.abs() < b.abs()) 
             BigInt::swap(a, b);
 
-        std::cout << "a = " << a << std::endl;
-        std::cout << "b = " << b << std::endl;
+        // std::cout << "a = " << a << std::endl;
+        // std::cout << "b = " << b << std::endl;
         for (i = 0; i < m; i++) {
-            std::cout << "a.digits[i] - b.digits[i] - t = " << a[i] << "-" << b[i] << "-" << t << std::endl;
+            // std::cout << "a.digits[i] - b.digits[i] - t = " << a[i] << "-" << b[i] << "-" << t << std::endl;
             s = (a.digits[i] - b.digits[i] - t);
             if (s < 0)
                 s += 10, t = 1;
             else
                 t = 0;
             a.digits[i] = s;
-
             
-            std::cout << "i = " << i << std::endl;
-            std::cout << "s = " << s << std::endl;
-            std::cout << "t = " << t << std::endl;
+            // std::cout << "i = " << i << std::endl;
+            // std::cout << "s = " << s << std::endl;
+            // std::cout << "t = " << t << std::endl;
 
         }
     } else {
@@ -324,10 +323,10 @@ BigInt& operator-=(BigInt &ap, const BigInt &bp) {
   else {
     if(a.abs() < b.abs()) {
       BigInt::swap(a, b);
-      std::cout << "a = " << a << std::endl;
-      std::cout << "b = " << b << std::endl;
+      // std::cout << "a = " << a << std::endl;
+      // std::cout << "b = " << b << std::endl;
       a.isNegative = !a.isNegative;
-      std::cout << "a.isNegative = " << a.isNegative << std::endl;
+      // std::cout << "a.isNegative = " << a.isNegative << std::endl;
     }
 
     for(i = 0; i < n; ++i) {
