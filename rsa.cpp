@@ -21,9 +21,9 @@ BigInt gcd(BigInt a, BigInt b) {
 // }
 
 BigInt extended_gcd(BigInt a, BigInt m, BigInt &x, BigInt &y) {
-    if (a.length() == 1 && a[0] == 0) {
-        x = BigInt();
-        y = BigInt(1);
+    if (a.null()) {
+        x = 0;
+        y = 1;
         return m;
     }
 
@@ -46,12 +46,13 @@ BigInt modular_inverse(BigInt a, BigInt m) {
     }
 
     // Ensure x is positive
-    while (x < BigInt()) {
+    while (x.negative() || x.null()) {
         x += m;
     }
 
     return x;
 }
+
 
 
 
@@ -71,20 +72,26 @@ void generate_keys(BigInt& p, BigInt& q, BigInt& n, BigInt& e, BigInt& d, bool i
 
     // 计算 Euler 函数 φ(n)
     BigInt phi_n = (p - 1) * (q - 1);
-    // std::cout << "phi_n = " << phi_n << std::endl;
+    std::cout << "phi_n = " << phi_n << std::endl;
     
     // 选择一个加密指数 e
     // 确保 e 与 φ(n) 互质，且 1 < e < φ(n)
     e = BigInt::random_bigint(phi_n - BigInt(1));
     while (gcd(e, phi_n) != 1) {
-        std::cout << "e = " << e << std::endl;
-        std::cout << "gcd = " << gcd(e, phi_n) << std::endl;
+        // std::cout << "e = " << e << std::endl;
+        // std::cout << "gcd = " << gcd(e, phi_n) << std::endl;
         e = BigInt::random_bigint(phi_n - BigInt(1));
     }
-    std::cout << "hr" << std::endl;
+    // std::cout << "hr" << std::endl;
     // 使用扩展欧几里得算法计算解密指数 d
     // d ≡ e^(-1) (mod φ(n))
-    d = modular_inverse(e, phi_n);
+    while(d.negative() || d.null()) {
+        d = BigInt();
+        d = modular_inverse(e, phi_n);
+        std::cout << "d = " << d << std::endl;
+        std::cout << "d.negative() = " << d.negative() << std::endl;
+        std::cout << "d.null() = " << d.null() << std::endl;
+    }
 
     std::cout << "p = " << p << std::endl;
     std::cout << "q = " << q << std::endl;

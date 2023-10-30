@@ -43,7 +43,7 @@ bool MillerRabinTest(const BigInt& n, int k) {
 
 // 生成一个随机的素数
 BigInt GenerateRandomPrime(int bits, int k) {
-    BigInt candidate = BigInt::random_bigint(bits);
+    BigInt candidate = BigInt::random_bigint(bits / 4);
     if ((candidate % BigInt(2))[0] == 0) candidate += 1;  // 确保生成的数是奇数
 
     while (true) {
@@ -61,9 +61,9 @@ std::pair<BigInt, BigInt> GenerateRandomPrimes(int bits, int k) {
     BigInt firstPrime = GenerateRandomPrime(bits, k);
     primes.first = firstPrime;
 
-    BigInt candidate = firstPrime + 2;  // 这里+2确保不接近
+    BigInt candidate = firstPrime * 2 + 1;  // 这里确保不接近
     while (true) {
-        if (MillerRabinTest(candidate, k) && !IsClose(candidate, firstPrime, bits)) {
+        if (MillerRabinTest(candidate, k)) {
             primes.second = candidate;
             break;
         }

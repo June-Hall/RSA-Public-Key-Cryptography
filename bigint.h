@@ -30,6 +30,12 @@ public:
 
     bool negative() const;
 
+    BigInt abs();
+
+    BigInt abs() const; 
+
+    static void swap(BigInt& a, BigInt& b);
+
     int operator[](const int index) const;
 
     // Operator Overloading:

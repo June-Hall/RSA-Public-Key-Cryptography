@@ -86,6 +86,24 @@ bool BigInt::negative() const {
     return this->isNegative;
 }
 
+BigInt BigInt::abs() {
+    BigInt temp(*this);
+    temp.isNegative = false;
+    return temp;
+}
+
+BigInt BigInt::abs() const {
+    BigInt temp(*this);
+    temp.isNegative = false;
+    return temp;
+}
+
+void BigInt::swap(BigInt& a, BigInt& b) {
+    BigInt temp(a);
+    a = b;
+    b = temp;
+}
+
 int BigInt::operator[](const int index) const {
     if (digits.size() <= index || index < 0)
         throw("ERROR");
@@ -120,16 +138,18 @@ bool operator<(const BigInt &a, const BigInt &b) {
         return n < m;
     }
     
-    if (a.isNegative) {
+    if (!a.isNegative) {
         for (int i = n - 1; i >= 0; i--) {
-            if (a.digits[i] != b.digits[i]) {
-                return a.digits[i] > b.digits[i];
+            if (a[i] != b[i]) {
+                // std::cout << "a[i] =" << a[i] << std::endl;
+                // std::cout << "b[i] =" << b[i] << std::endl;
+                return a[i] < b[i];
             }
         }
     } else {
-        for (int i = 0; i < n; i++) {
-            if (a.digits[i] != b.digits[i]) {
-                return a.digits[i] < b.digits[i];
+        for (int i = n - 1; i >= n; i--) {
+            if (a[i] != b[i]) {
+                return a[i] > b[i];
             }
         }
     }
@@ -222,55 +242,61 @@ BigInt BigInt::operator--(int temp) {
     return aux;
 }
 
-BigInt &operator+=(BigInt &a, const BigInt &b) {
+BigInt &operator+=(BigInt &ap, const BigInt &bp) {
     int t = 0, s, i;
-    int n = Length(a), m = Length(b);
-    if (m > n)
-        a.digits.append(m - n, 0);
-    n = Length(a);
+    BigInt a(ap), b(bp);
+    int m = a.length(), n = b.length();
+    
+    if (m < n) 
+        a.digits.append(n - m, 0);
+    else if (m > n)
+        b.digits.append(m - n, 0);
+    
     if (a.isNegative != b.isNegative) {
-        // 如果两个数的符号不同，执行减法操作
-        if (a < b) {
-            a.isNegative = b.isNegative;
-            for (i = 0; i < n; i++) {
-                if (i < m)
-                    s = (b.digits[i] - a.digits[i]) + t;
-                else
-                    s = -a.digits[i] + t;
-                if (s < 0)
-                    s += 10, t = -1;
-                else
-                    t = 0;
-                a.digits[i] = s;
-            }
-        } else {
-            for (i = 0; i < n; i++) {
-                if (i < m)
-                    s = (a.digits[i] - b.digits[i]) + t;
-                else
-                    s = a.digits[i] + t;
-                if (s < 0)
-                    s += 10, t = -1;
-                else
-                    t = 0;
-                a.digits[i] = s;
-            }
+        if (a.abs() < b.abs()) 
+            BigInt::swap(a, b);
+
+        std::cout << "a = " << a << std::endl;
+        std::cout << "b = " << b << std::endl;
+        for (i = 0; i < m; i++) {
+            std::cout << "a.digits[i] - b.digits[i] - t = " << a[i] << "-" << b[i] << "-" << t << std::endl;
+            s = (a.digits[i] - b.digits[i] - t);
+            if (s < 0)
+                s += 10, t = 1;
+            else
+                t = 0;
+            a.digits[i] = s;
+
+            
+            std::cout << "i = " << i << std::endl;
+            std::cout << "s = " << s << std::endl;
+            std::cout << "t = " << t << std::endl;
+
         }
     } else {
-        // 如果两个数的符号相同，执行加法操作
         for (i = 0; i < n; i++) {
-            if (i < m)
-                s = (a.digits[i] + b.digits[i]) + t;
-            else
-                s = a.digits[i] + t;
+            s = (a.digits[i] + b.digits[i] + t);
             t = s / 10;
             a.digits[i] = (s % 10);
         }
+        if (t)
+            a.digits.push_back(t);
     }
-    if (t)
-        a.digits.push_back(t);
-    return a;
+
+    i = a.digits.size() - 1;  
+    while (i > 0 && a.digits[i] == 0) {
+        i--;
+    }
+
+    if (i != a.digits.size() - 1) {
+        a.digits.erase(a.digits.begin() + i + 1, a.digits.end());
+    }
+
+    ap = a;
+    
+    return ap;
 }
+
 
 BigInt operator+(const BigInt &a, const BigInt &b) {
     BigInt temp;
@@ -279,35 +305,53 @@ BigInt operator+(const BigInt &a, const BigInt &b) {
     return temp;
 }
 
-BigInt &operator-=(BigInt &a, const BigInt &b) {
-    if (a.isNegative != b.isNegative) {
-        a += b;
-    } else {
-        if (a < b) {
-            BigInt temp(b);
-            temp -= a;
-            a = temp;
-            a.isNegative = !a.isNegative;
-        } else {
-            int n = Length(a), m = Length(b);
-            int i, t = 0, s;
-            for (i = 0; i < n; i++) {
-                if (i < m)
-                    s = a.digits[i] - b.digits[i] + t;
-                else
-                    s = a.digits[i] + t;
-                if (s < 0)
-                    s += 10, t = -1;
-                else
-                    t = 0;
-                a.digits[i] = s;
-            }
-            while (n > 1 && a.digits[n - 1] == 0)
-                a.digits.pop_back(), n--;
-        }
+BigInt& operator-=(BigInt &ap, const BigInt &bp) {
+  BigInt a(ap), b(bp);
+  int n = a.length(), m = b.length();
+  int i, s, t = 0;
+
+  // 统一位数
+  if(n < m) a.digits.append(m - n, 0);
+  else if(n > m) b.digits.append(n - m, 0);
+
+  // 符号相反时直接做减法
+  if(a.isNegative != b.isNegative) {
+    BigInt temp = a.abs() + b.abs();
+    temp.isNegative = a.isNegative;
+    a = temp;
+  }
+  // 符号相同时调换顺序,做加法
+  else {
+    if(a.abs() < b.abs()) {
+      BigInt::swap(a, b);
+      std::cout << "a = " << a << std::endl;
+      std::cout << "b = " << b << std::endl;
+      a.isNegative = !a.isNegative;
+      std::cout << "a.isNegative = " << a.isNegative << std::endl;
     }
-    return a;
+
+    for(i = 0; i < n; ++i) {
+      s = a.digits[i] - b.digits[i] - t;
+      if(s < 0) s += 10, t = 1; 
+      else t = 0;
+      a.digits[i] = s;
+    }
+  }
+  
+  // 去除前导0
+    i = a.digits.size() - 1;  
+    while (i > 0 && a.digits[i] == 0) {
+        i--;
+    }
+
+    if (i != a.digits.size() - 1) {
+        a.digits.erase(a.digits.begin() + i + 1, a.digits.end());
+    }
+  ap = a;
+  return ap;
 }
+
+
 
 
 BigInt operator-(const BigInt &a, const BigInt &b) {
@@ -358,29 +402,27 @@ BigInt operator*(const BigInt &a, const BigInt &b) {
     return temp;
 }
 
-BigInt &operator/=(BigInt &a, const BigInt &b) {
-    if (Null(b))
+BigInt &operator/=(BigInt &ap, const BigInt &bp) {
+    if (Null(bp))
         throw("Arithmetic Error: Division By 0");
 
-    bool resultIsNegative = (a.isNegative != b.isNegative);
+    bool resultIsNegative = (ap.isNegative != bp.isNegative);
 
-    if (a.isNegative) {
-        a.isNegative = false;
-    }
-    if (b.isNegative) {
-        a.isNegative = true;
-    }
+    BigInt a = ap.abs();
+    BigInt b = bp.abs();
 
     if (a < b) {
         a = BigInt();
         a.isNegative = resultIsNegative;
-        return a;
+        ap = a;
+        return ap;
     }
 
     if (a == b) {
         a = BigInt(1);
         a.isNegative = resultIsNegative;
-        return a;
+        ap = a;
+        return ap;
     }
 
     int i, lgcat = 0, cc;
@@ -406,8 +448,8 @@ BigInt &operator/=(BigInt &a, const BigInt &b) {
     a.digits.resize(lgcat);
 
     a.isNegative = resultIsNegative;
-
-    return a;
+    ap = a;
+    return ap;
 }
 
 BigInt operator/(const BigInt &a, const BigInt &b) {
@@ -520,6 +562,10 @@ std::istream &operator>>(std::istream &in, BigInt &a) {
 }
 
 std::ostream &operator<<(std::ostream &out, const BigInt &a) {
+    if (a.negative())
+    {
+        out << '-';
+    }
     for (int i = a.digits.size() - 1; i >= 0; i--)
         out << (short) a.digits[i];
     return out;
@@ -543,9 +589,14 @@ BigInt BigInt::pow(const BigInt& base, const BigInt& exponent, const BigInt& mod
 
 void BigInt::randomize(int bits) {
     std::string digits;
-
+    int t = rand() % 10;
+    while (t == 0) {
+        t = rand() % 10;
+    }
+    digits += (t + '0');
     for(int i = 0; i < bits; i++) { 
         digits += (rand() % 10 + '0');
+        // std::cout << "digits = " << digits << std::endl;
     }
 
     *this = BigInt(digits);
@@ -566,11 +617,12 @@ int BigInt::num_bits() {
 
   // 计算二进制位数
   if (index < 0) return 0; // 特殊情况:0
-  int bit = index * log10(2); // 每位数字对应log10(2)个二进制位
-  bit += floor(log10((*this)[index])); // 加上最高位的位数contribution
+  int bit = index * log2(10); // 每位数字对应log2(10)个二进制位
+  bit += floor(log2((*this)[index] + 1)); // 加上最高位的位数contribution
 
-  return bit + 1; // 加1是因为从1开始计数  
+  return bit;
 }
+
 
 BigInt BigInt::random_bigint(BigInt max) {
   int num_bits = max.num_bits();

@@ -3,13 +3,16 @@
 #include "rsa.h"
 
 int main() {
-    BigInt x("79380248390522737902399703986576");
+    BigInt x("-79380248390522737902399703986576");
     int bits = x.num_bits();
     std::cout << "bits = " << bits << std::endl;
     BigInt y(2);
-    y ^= BigInt(10);
+    y ^= BigInt(bits+1);
+
+    std::cout << "x = " << x << std::endl;
     std::cout << "y = " << y << std::endl;
-    std::cout << "x > y = " << (x > y) << std::endl;
+    std::cout << "x < y = " << (x < y) << std::endl;
+    std::cout << "x += y = " << (x += y) << std::endl;
 
     BigInt p, q, n, e, d;
     generate_keys(p, q, n, e, d);
